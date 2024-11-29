@@ -2,7 +2,18 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
+const path = require('path'); // Agregar esta línea para importar el módulo 'path'
+
 const Subscription = require('../models/Subscription'); // Asegúrate de que la ruta sea correcta
+
+
+// Configura Express para servir archivos estáticos desde la raíz del proyecto
+app.use(express.static(path.join(__dirname, '..'))); // Sube un nivel para servir archivos desde la raíz
+
+// Ruta para servir index.html cuando accedan a la raíz '/'
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html')); // Ruta para servir el archivo index.html
+});
 
 
 // Configuración de CORS

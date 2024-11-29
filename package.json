@@ -1,0 +1,17 @@
+{
+    "name": "limelight-html",
+    "version": "1.0.0",
+    "description": "Proyecto con Node.js y Express",
+    "main": "api/server.js",
+    "scripts": {
+      "start": "node api/server.js"  
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "path": "^0.12.7"
+    },
+    "engines": {
+      "node": "16.x"  
+    }
+  }
+  
