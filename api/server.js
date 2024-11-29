@@ -126,7 +126,7 @@ app.post("/api/insertar", async (req, res) => {
 
 // Iniciar servidor
 app.listen(3000, () => {
-    console.log("Servidor corriendo en http://localhost:3000");
+    console.log("Servidor corriendo en https://cholos.onrender.com/");
 });
 
 

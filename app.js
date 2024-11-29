@@ -70,7 +70,7 @@ function guardarOffline(datos) {
 
 // Enviar datos al servidor
 function enviarDatosServidor(datos) {
-    fetch("http://localhost:3000/api/insertar", {
+    fetch("https://cholos.onrender.com//api/insertar", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
