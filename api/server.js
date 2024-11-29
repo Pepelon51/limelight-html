@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
-const Subscription = require('./models/Subscription'); // Asegúrate de que la ruta sea correcta
+const Subscription = require('../models/Subscription'); // Asegúrate de que la ruta sea correcta
 
 
 // Configuración de CORS
@@ -167,20 +167,8 @@ app.post('/api/subscription', async (req, res) => {
     }
   });
   
-  // Conexión a la base de datos de MongoDB
-  mongoose.connect('mongodb://localhost:27017/miBaseDeDatos', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-    .then(() => {
-      console.log('Conectado a la base de datos');
-      app.listen(3000, () => console.log('Servidor corriendo en puerto 3000'));
-    })
-    .catch((error) => console.error('Error de conexión a la base de datos:', error));
-  
-
 //Ruta para enviar notificación al usuario
-
+/*
 app.post('/api/sendNotification', async (req, res) => {
     const { userId, message } = req.body;
 
@@ -208,39 +196,37 @@ app.post('/api/sendNotification', async (req, res) => {
         console.error("Error al enviar la notificación:", error);
         res.status(500).json({ message: "Error al enviar la notificación" });
     }
-});
+});*/
 
 
 // Endpoint para enviar notificación
-app.post("/api/sendNotification", async (req, res) => {
+app.post('/api/sendNotification', async (req, res) => {
     const { userId, message } = req.body;
 
     if (!userId || !message) {
-        return res.status(400).json({ message: "userId and message are required." });
+        return res.status(400).json({ message: "Faltan parámetros" });
     }
 
     try {
-        // Buscar el usuario en la base de datos
-        const user = await User.findById(userId);
+        // Buscar la suscripción del usuario en la colección de 'subscriptions'
+        const subscription = await Subscription.findOne({ userId });
 
-        if (!user || !user.subscription) {
-            return res.status(404).json({ message: "Usuario o suscripción no encontrada." });
+        if (!subscription) {
+            return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
 
-        const subscription = user.subscription;
-
-        // Enviar notificación usando la suscripción guardada
+        // Preparamos la notificación
         const payload = JSON.stringify({
-            title: "Nueva notificación",
+            title: 'Notificación personalizada',
             message: message,
         });
 
-        // Usar web-push o tu servicio de envío de notificaciones
-        await webPush.sendNotification(subscription, payload);
+        // Enviar la notificación usando la suscripción almacenada
+        await webPush.sendNotification(subscription.subscription, payload);
 
-        res.status(200).json({ message: "Notificación enviada con éxito." });
+        res.status(200).json({ message: "Notificación enviada exitosamente" });
     } catch (error) {
         console.error("Error al enviar la notificación:", error);
-        res.status(500).json({ message: "Error en el servidor." });
+        res.status(500).json({ message: "Error al enviar la notificación" });
     }
 });

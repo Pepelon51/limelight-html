@@ -58,96 +58,100 @@
 
 <script>
     document.getElementById("loginForm").addEventListener("submit", async function (event) {
-      event.preventDefault();
-  
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-  
-      try {
-        // Hacemos el login y obtenemos el userId
-        const response = await fetch("http://localhost:3000/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        });
-  
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-        const data = await response.json();
-        alert(data.message);
-  
-        // Si el login es exitoso, obtenemos el userId
-        if (data.message === "Login exitoso.") {
-          const userId = data.userId; // Aquí se obtiene el userId del servidor
-  
-          // Ahora pasamos el userId al serviceWorker
-          navigator.serviceWorker.ready.then((registration) => {
-            registration.pushManager.getSubscription().then(async (subscription) => {
-              if (!subscription) {
-                console.log('El usuario no está suscrito a las notificaciones.');
-                return;
-              }
-  
-              // Obtenemos la clave de p256dh y auth directamente de los métodos del subscription
-              const p256dh = subscription.getKey('p256dh');
-              const auth = subscription.getKey('auth');
-  
-              // Si alguna clave falta, mostramos un error
-              if (!p256dh || !auth) {
-                console.error('Faltan claves de la suscripción: p256dh o auth');
-                alert('Faltan parámetros en la suscripción.');
-                return;
-              }
-  
-              // Convertimos las claves a formato base64 si están presentes
-              const subscriptionData = {
-                endpoint: subscription.endpoint,
-                keys: {
-                  p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(p256dh))),
-                  auth: btoa(String.fromCharCode.apply(null, new Uint8Array(auth))),
-                },
-              };
-  
-              console.log("Subscription data:", subscriptionData);
-  
-              // Verificar que todos los parámetros estén presentes
-              if (!subscriptionData.endpoint || !subscriptionData.keys.p256dh || !subscriptionData.keys.auth) {
-                console.error('Faltan parámetros en la suscripción:', subscriptionData);
-                alert('Faltan parámetros en la suscripción.');
-                return;
-              }
-  
-              // Enviamos la suscripción al servidor
-              const subscriptionResponse = await fetch('http://localhost:3000/api/subscription', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  _id: userId,  // Aquí ya pasamos el userId obtenido
-                  subscription: subscriptionData,
-                }),
-              });
-  
-              const subscriptionResult = await subscriptionResponse.json();
-              if (subscriptionResponse.ok) {
-                console.log('Suscripción guardada correctamente.');
-              } else {
-                console.error('Error al guardar la suscripción', subscriptionResult);
-                alert('Error al guardar la suscripción: ' + subscriptionResult.message);
-              }
-            }).catch(err => {
-              console.error('Error al obtener la suscripción', err);
-              alert('Error al obtener la suscripción: ' + err.message);
-            });
-          }).catch(err => {
-            console.error('Error al registrar el Service Worker', err);
-            alert('Error al registrar el Service Worker: ' + err.message);
-          });
-        }
-      } catch (error) {
-        console.error("Error logging in:", error);
-        alert("Error en el login: " + error.message);
-      }
+  event.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    // Hacemos el login y obtenemos el userId
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
     });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    alert(data.message);
+
+    // Si el login es exitoso, obtenemos el userId
+    if (data.message === "Login exitoso.") {
+      const userId = data.userId; // Aquí se obtiene el userId del servidor
+
+      // Redirigir a contact.html
+      window.location.href = "contact.html";
+
+      // Ahora pasamos el userId al serviceWorker
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.pushManager.getSubscription().then(async (subscription) => {
+          if (!subscription) {
+            console.log('El usuario no está suscrito a las notificaciones.');
+            return;
+          }
+
+          // Obtenemos la clave de p256dh y auth directamente de los métodos del subscription
+          const p256dh = subscription.getKey('p256dh');
+          const auth = subscription.getKey('auth');
+
+          // Si alguna clave falta, mostramos un error
+          if (!p256dh || !auth) {
+            console.error('Faltan claves de la suscripción: p256dh o auth');
+            alert('Faltan parámetros en la suscripción.');
+            return;
+          }
+
+          // Convertimos las claves a formato base64 si están presentes
+          const subscriptionData = {
+            endpoint: subscription.endpoint,
+            keys: {
+              p256dh: btoa(String.fromCharCode.apply(null, new Uint8Array(p256dh))),
+              auth: btoa(String.fromCharCode.apply(null, new Uint8Array(auth))),
+            },
+          };
+
+          console.log("Subscription data:", subscriptionData);
+
+          // Verificar que todos los parámetros estén presentes
+          if (!subscriptionData.endpoint || !subscriptionData.keys.p256dh || !subscriptionData.keys.auth) {
+            console.error('Faltan parámetros en la suscripción:', subscriptionData);
+            alert('Faltan parámetros en la suscripción.');
+            return;
+          }
+
+          // Enviamos la suscripción al servidor
+          const subscriptionResponse = await fetch('http://localhost:3000/api/subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              _id: userId,  // Aquí ya pasamos el userId obtenido
+              subscription: subscriptionData,
+            }),
+          });
+
+          const subscriptionResult = await subscriptionResponse.json();
+          if (subscriptionResponse.ok) {
+            console.log('Suscripción guardada correctamente.');
+          } else {
+            console.error('Error al guardar la suscripción', subscriptionResult);
+            alert('Error al guardar la suscripción: ' + subscriptionResult.message);
+          }
+        }).catch(err => {
+          console.error('Error al obtener la suscripción', err);
+          alert('Error al obtener la suscripción: ' + err.message);
+        });
+      }).catch(err => {
+        console.error('Error al registrar el Service Worker', err);
+        alert('Error al registrar el Service Worker: ' + err.message);
+      });
+    }
+  } catch (error) {
+    console.error("Error logging in:", error);
+    alert("Error en el login: " + error.message);
+  }
+});
+
   </script>
   
 
