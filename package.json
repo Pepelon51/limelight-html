@@ -10,7 +10,8 @@
       "express": "^4.17.1",
       "path": "^0.12.7",
         "cors": "^2.8.5",
-    "mongoose": "^5.10.9"
+    "mongoose": "^5.10.9",
+    "bcrypt": "^5.0.1"
     },
     "engines": {
       "node": "16.x"  
