@@ -53,7 +53,7 @@ const User = mongoose.model("User", userSchema);
 
 
 // Ruta para registrar usuario
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 app.post("/api/register", async (req, res) => {
     const { username, password, subscription } = req.body;
