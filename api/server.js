@@ -227,6 +227,11 @@ app.post('/api/sendNotification', async (req, res) => {
         if (!subscription) {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
+        if (error.statusCode === 410) {
+            // Elimina la suscripción de la base de datos si es inválida
+            await Subscription.deleteOne({ userId });
+            console.log("Suscripción eliminada debido a que ha expirado.");
+        }
 
         // Preparamos la notificación
         const payload = JSON.stringify({

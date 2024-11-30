@@ -75,5 +75,42 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
+navigator.serviceWorker.ready.then(registration => {
+    registration.pushManager.getSubscription()
+        .then(subscription => {
+            if (subscription) {
+                // Si la suscripción ya existe, actualízala
+                // Envía la nueva suscripción al servidor
+                fetch('/api/updateSubscription', {
+                    method: 'POST',
+                    body: JSON.stringify({ subscription }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            } else {
+                // Si no hay una suscripción, crea una nueva
+                registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: 'BEP6PXttmcLs3pwbHV_ow1f7kNFwWpA8Jlbcn6-9hritgXo3soDbWrRtnAvwSDD63zppvpOW7UaX6ZddN0sTXtA'
+                })
+                .then(subscription => {
+                    // Envía la nueva suscripción al servidor
+                    fetch('/api/subscription', {
+                        method: 'POST',
+                        body: JSON.stringify({ subscription }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                });
+            }
+        })
+        .catch(err => {
+            console.error('Error al obtener suscripción de push:', err);
+        });
+});
+
+
 
 
