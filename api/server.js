@@ -212,25 +212,17 @@ app.post('/api/sendNotification', async (req, res) => {
 */
 // Endpoint para enviar notificación
 app.post('/api/sendNotification', async (req, res) => {
-    const { message } = req.body;
-    const { userId } = req.body;  // El _id del usuario logueado debería ser pasado en el body de la solicitud
+    const { userId, message } = req.body;
 
     if (!userId || !message) {
         return res.status(400).json({ message: "Faltan parámetros" });
     }
 
     try {
-        // Buscar la suscripción del usuario en la base de datos
         const subscription = await Subscription.findOne({ userId });
 
-        // Verificar si la suscripción existe
         if (!subscription) {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
-        }
-        if (error.statusCode === 410) {
-            // Elimina la suscripción de la base de datos si es inválida
-            await Subscription.deleteOne({ userId });
-            console.log("Suscripción eliminada debido a que ha expirado.");
         }
 
         // Preparamos la notificación
@@ -241,13 +233,11 @@ app.post('/api/sendNotification', async (req, res) => {
             url: 'https://cholos.onrender.com/'
         });
 
-        // Enviar la notificación usando WebPush
         await webPush.sendNotification(subscription.subscription, payload);
-
         res.status(200).json({ message: "Notificación enviada exitosamente" });
-
     } catch (error) {
         console.error("Error al enviar notificación:", error);
-        res.status(500).json({ message: "Error al enviar la notificación", error: error.message });
+        res.status(500).json({ message: "Error al enviar notificación", error: error.message });
     }
 });
+
