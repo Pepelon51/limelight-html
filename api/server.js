@@ -130,23 +130,23 @@ app.listen(3000, () => {
 });
 
 
+
+// Configura tus claves VAPID
 const webPush = require('web-push');
 
 // Configura tus claves VAPID
 const vapidKeys = {
-    publicKey: 'BNKEVz_qtMs4SFMLK1lr1dDgBUx8RRiRbXuPMF_j2zgzJ385qWExYAtjfvsuzg8y3jBAt7q59vjCyjFLvmnqVSk',
-    privateKey: 'kRAww16LSneqryy3Dlz8FZCYWCxGPkA1G2wwjWdqMYA',
+    publicKey: 'BEP6PXttmcLs3pwbHV_ow1f7kNFwWpA8Jlbcn6-9hritgXo3soDbWrRtnAvwSDD63zppvpOW7UaX6ZddN0sTXtA',
+    privateKey: 'VbHQEOHs1ped7nBufKse9089IFDFOQEQPUeupWXMQEg',
 };
 
-const vapidPublicKey = 'BNKEVz_qtMs4SFMLK1lr1dDgBUx8RRiRbXuPMF_j2zgzJ385qWExYAtjfvsuzg8y3jBAt7q59vjCyjFLvmnqVSk'; // La clave pública VAPID generada
-const base64Url = vapidPublicKey.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-console.log('Clave en formato Base64URL:', base64Url);
-
+// Establecer las claves VAPID en webPush
 webPush.setVapidDetails(
-    'mailto:tucorreo@example.com',
+    'mailto:pepemejia_51@outlook.com', 
     vapidKeys.publicKey,
     vapidKeys.privateKey
 );
+
 
 //Guardar suscripción del usuario
 app.post('/api/subscription', async (req, res) => {
@@ -207,9 +207,9 @@ app.post('/api/sendNotification', async (req, res) => {
         console.error("Error al enviar la notificación:", error);
         res.status(500).json({ message: "Error al enviar la notificación" });
     }
-});*/
+});
 
-
+*/
 // Endpoint para enviar notificación
 app.post('/api/sendNotification', async (req, res) => {
     const { userId, message } = req.body;
@@ -219,7 +219,6 @@ app.post('/api/sendNotification', async (req, res) => {
     }
 
     try {
-        // Buscar la suscripción del usuario en la colección de 'subscriptions'
         const subscription = await Subscription.findOne({ userId });
 
         if (!subscription) {
@@ -229,15 +228,15 @@ app.post('/api/sendNotification', async (req, res) => {
         // Preparamos la notificación
         const payload = JSON.stringify({
             title: 'Notificación personalizada',
-            message: message,
+            body: message,
+            icon: '/icon.png',
+            url: 'https://cholos.onrender.com/'
         });
 
-        // Enviar la notificación usando la suscripción almacenada
         await webPush.sendNotification(subscription.subscription, payload);
-
         res.status(200).json({ message: "Notificación enviada exitosamente" });
     } catch (error) {
-        console.error("Error al enviar la notificación:", error);
-        res.status(500).json({ message: "Error al enviar la notificación" });
+        console.error("Error al enviar notificación no rive tu mamada:", error);
+        res.status(500).json({ message: "Error al enviar notificaciónasdasd", error: error.message });
     }
 });

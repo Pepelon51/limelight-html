@@ -40,3 +40,40 @@ self.addEventListener('activate', (event) => {
     );
     self.clients.claim();
 });
+
+self.addEventListener('push', (event) => {
+    const data = event.data ? JSON.parse(event.data.text()) : {};
+
+    const title = data.title || 'Notificación';
+    const options = {
+        body: data.message || 'Tienes un mensaje nuevo',
+        icon: '/icon.png', // Ruta del ícono
+        badge: '/badge.png' // Ruta del badge (opcional)
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
+});
+
+
+self.addEventListener('notificationclick', (event) => {
+    console.log('Notificación clickeada:', event.notification);
+
+    event.notification.close();
+
+    // Abrir o enfocar la página principal
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
+            if (clientsArr.length > 0) {
+                const client = clientsArr[0];
+                return client.focus();
+            } else {
+                return clients.openWindow('/');
+            }
+        })
+    );
+});
+
+
+

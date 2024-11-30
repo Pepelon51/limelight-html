@@ -114,7 +114,7 @@ async function subscribeUserToPushNotifications(registration, userId) {
   try {
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true, // Esto es obligatorio
-      applicationServerKey: urlB64ToUint8Array("BNKEVz_qtMs4SFMLK1lr1dDgBUx8RRiRbXuPMF_j2zgzJ385qWExYAtjfvsuzg8y3jBAt7q59vjCyjFLvmnqVSk") // Asegúrate de tener tu clave pública VAPID aquí
+      applicationServerKey: urlB64ToUint8Array("BEP6PXttmcLs3pwbHV_ow1f7kNFwWpA8Jlbcn6-9hritgXo3soDbWrRtnAvwSDD63zppvpOW7UaX6ZddN0sTXtA")
     });
 
     console.log('Usuario suscrito correctamente:', subscription);
@@ -158,9 +158,13 @@ async function sendSubscriptionToServer(subscriptionData, userId) {
   });
 
   const result = await response.json();
+  console.log('Respuesta del servidor:', result); // Aquí puedes ver lo que el servidor devuelve
+
 
   if (response.ok) {
-    console.log('Suscripción guardada correctamente.');
+    console.log('Suscripción guardada correctamente.', result);
+    console.log('Respuesta del servidor:', result); // Aquí puedes ver lo que el servidor devuelve
+
   } else {
     console.error('Error al guardar la suscripción', result);
     alert('Error al guardar la suscripción: ' + result.message);
