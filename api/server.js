@@ -225,7 +225,6 @@ app.post('/api/sendNotification', async (req, res) => {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
 
-        // Preparamos el payload
         const payload = JSON.stringify({
             title: 'Notificación personalizada',
             body: message,
@@ -233,11 +232,23 @@ app.post('/api/sendNotification', async (req, res) => {
             url: 'https://cholos.onrender.com/'
         });
 
-        // Enviamos la notificación
-        await webPush.sendNotification(subscription.subscription, payload);
-        res.status(200).json({ message: "Notificación enviada exitosamente" });
+        // Intentar enviar la notificación
+        try {
+            await webPush.sendNotification(subscription.subscription, payload);
+            res.status(200).json({ message: "Notificación enviada exitosamente" });
+        } catch (error) {
+            if (error.statusCode === 410) {
+                // Si la suscripción ha expirado, la eliminamos de la base de datos
+                await Subscription.deleteOne({ userId });
+                return res.status(410).json({ message: "La suscripción ha expirado. Suscripción eliminada." });
+            }
+            console.error("Error al enviar notificación:", error);
+            res.status(500).json({ message: "Error al enviar notificación", error: error.message });
+        }
+
     } catch (error) {
-        console.error("Error al enviar notificación:", error);
-        res.status(500).json({ message: "Error al enviar notificación", error: error.message });
+        console.error("Error al buscar suscripción:", error);
+        res.status(500).json({ message: "Error al procesar la solicitud", error: error.message });
     }
 });
+
