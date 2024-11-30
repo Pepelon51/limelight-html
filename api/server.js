@@ -221,14 +221,11 @@ app.post('/api/sendNotification', async (req, res) => {
     try {
         const subscription = await Subscription.findOne({ userId });
 
-        const response = await webPush.sendNotification(subscription.subscription, payload);
-        console.log("Respuesta de WebPush:", response);
-        
         if (!subscription) {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
 
-        // Preparamos la notificación
+        // Preparamos el payload
         const payload = JSON.stringify({
             title: 'Notificación personalizada',
             body: message,
@@ -236,6 +233,7 @@ app.post('/api/sendNotification', async (req, res) => {
             url: 'https://cholos.onrender.com/'
         });
 
+        // Enviamos la notificación
         await webPush.sendNotification(subscription.subscription, payload);
         res.status(200).json({ message: "Notificación enviada exitosamente" });
     } catch (error) {
