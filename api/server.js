@@ -232,23 +232,21 @@ app.post('/api/sendNotification', async (req, res) => {
             url: 'https://cholos.onrender.com/'
         });
 
-        // Intentar enviar la notificación
         try {
             await webPush.sendNotification(subscription.subscription, payload);
             res.status(200).json({ message: "Notificación enviada exitosamente" });
         } catch (error) {
-            if (error.statusCode === 410) {
-                // Si la suscripción ha expirado, la eliminamos de la base de datos
-                await Subscription.deleteOne({ userId });
+            if (error.statusCode === 410) { // Error 410 - Expiración de la suscripción
+                console.log("La suscripción ha expirado, eliminando suscripción de la base de datos.");
+                await Subscription.deleteOne({ userId }); // Eliminar la suscripción expirado de la base de datos
                 return res.status(410).json({ message: "La suscripción ha expirado. Suscripción eliminada." });
+            } else {
+                console.error("Error al enviar notificación:", error);
+                return res.status(500).json({ message: "Error al enviar notificación", error: error.message });
             }
-            console.error("Error al enviar notificación:", error);
-            res.status(500).json({ message: "Error al enviar notificación", error: error.message });
         }
-
     } catch (error) {
-        console.error("Error al buscar suscripción:", error);
-        res.status(500).json({ message: "Error al procesar la solicitud", error: error.message });
+        console.error("Error al obtener la suscripción:", error);
+        res.status(500).json({ message: "Error al obtener la suscripción", error: error.message });
     }
 });
-
