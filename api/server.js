@@ -221,6 +221,9 @@ app.post('/api/sendNotification', async (req, res) => {
     try {
         const subscription = await Subscription.findOne({ userId });
 
+        const response = await webPush.sendNotification(subscription.subscription, payload);
+        console.log("Respuesta de WebPush:", response);
+        
         if (!subscription) {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
@@ -236,7 +239,7 @@ app.post('/api/sendNotification', async (req, res) => {
         await webPush.sendNotification(subscription.subscription, payload);
         res.status(200).json({ message: "Notificación enviada exitosamente" });
     } catch (error) {
-        console.error("Error al enviar notificación no rive tu mamada:", error);
-        res.status(500).json({ message: "Error al enviar notificaciónasdasd", error: error.message });
+        console.error("Error al enviar notificación:", error);
+        res.status(500).json({ message: "Error al enviar notificación", error: error.message });
     }
 });
