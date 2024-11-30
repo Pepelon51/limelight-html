@@ -114,3 +114,9 @@ navigator.serviceWorker.ready.then(registration => {
 
 
 
+// Aquí es donde puedes hacer algo con `self.ready`, si es necesario
+self.ready.then(() => {
+    console.log('Service Worker listo para manejar notificaciones');
+}).catch((error) => {
+    console.error('Error al acceder a `self.ready`:', error);
+});

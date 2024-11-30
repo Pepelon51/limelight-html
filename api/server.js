@@ -225,19 +225,36 @@ app.post('/api/sendNotification', async (req, res) => {
             return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
         }
 
+        // Verifica que la suscripción no haya expirado
+        const { endpoint } = subscription.subscription;
+        if (!endpoint) {
+            return res.status(400).json({ message: "La suscripción no es válida, endpoint no encontrado." });
+        }
+
         // Preparamos la notificación
         const payload = JSON.stringify({
             title: 'Notificación personalizada',
             body: message,
             icon: '/icon.png',
-            url: 'https://cholos.onrender.com/'
+            url: 'https://cholos.onrender.com/'  // Asegúrate de que la URL sea correcta
         });
 
+        // Intentamos enviar la notificación
         await webPush.sendNotification(subscription.subscription, payload);
+
         res.status(200).json({ message: "Notificación enviada exitosamente" });
     } catch (error) {
         console.error("Error al enviar notificación:", error);
-        res.status(500).json({ message: "Error al enviar notificación", error: error.message });
+
+        // Si la suscripción ha expirado o no es válida, mostramos un error más específico
+        if (error instanceof webPush.WebPushError && error.statusCode === 410) {
+            return res.status(410).json({
+                message: "La suscripción ha expirado o es inválida.",
+                error: error.message
+            });
+        }
+
+        // Manejo genérico de errores
+        res.status(500).json({ message: "Error al enviar notificación", error: error.message || error });
     }
 });
-
