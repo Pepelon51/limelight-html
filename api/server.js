@@ -80,6 +80,8 @@ app.post("/api/register", async (req, res) => {
 // Ruta para hacer login y verificar las credenciales
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
+    console.log("Cuerpo recibido en login:", req.body);
+
 
     // Validar que los campos no estén vacíos
     if (!username || !password) {
