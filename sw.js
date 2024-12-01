@@ -47,8 +47,7 @@ self.addEventListener('push', (event) => {
     const title = data.title || 'Notificación';
     const options = {
         body: data.message || 'Tienes un mensaje nuevo',
-        icon: '/icon.png', // Ruta del ícono
-        badge: '/badge.png' // Ruta del badge (opcional)
+        icon: 'https://cholos.onrender.com/images/logo.png', // Ruta del ícono
     };
 
     event.waitUntil(
