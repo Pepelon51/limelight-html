@@ -148,69 +148,7 @@ webPush.setVapidDetails(
 );
 
 
-//Guardar suscripción del usuario
-app.post('/api/subscription', async (req, res) => {
-    try {
-      const { _id, subscription } = req.body;
-  
-      if (!(_id && subscription && subscription.endpoint && subscription.keys && subscription.keys.p256dh && subscription.keys.auth)) {
-        console.log("Parámetros faltantes en la suscripción:", req.body);
-        return res.status(400).json({ message: 'Faltan parámetros' });
-      }
-  
-      const userSubscription = new Subscription({
-        userId: _id,
-        subscription: {
-          endpoint: subscription.endpoint,
-          keys: {
-            p256dh: subscription.keys.p256dh,
-            auth: subscription.keys.auth,
-          },
-        },
-      });
-  
-      await userSubscription.save();
-  
-      res.status(200).json({ message: 'Suscripción guardada correctamente' });
-    } catch (error) {
-      console.error("Error al guardar la suscripción:", error);
-      res.status(500).json({ message: 'Error al guardar la suscripción' });
-    }
-  });
-  
-//Ruta para enviar notificación al usuario
-/*
-app.post('/api/sendNotification', async (req, res) => {
-    const { userId, message } = req.body;
-
-    if (!userId || !message) {
-        return res.status(400).json({ message: "Faltan parámetros" });
-    }
-
-    try {
-        const user = await User.findById(userId);
-        if (!user || !user.subscription) {
-            return res.status(404).json({ message: "Usuario o suscripción no encontrada" });
-        }
-
-        // Preparamos la notificación
-        const payload = JSON.stringify({
-            title: 'Notificación personalizada',
-            message: message,
-        });
-
-        // Enviamos la notificación
-        await webPush.sendNotification(user.subscription, payload);
-
-        res.status(200).json({ message: "Notificación enviada exitosamente" });
-    } catch (error) {
-        console.error("Error al enviar la notificación:", error);
-        res.status(500).json({ message: "Error al enviar la notificación" });
-    }
-});
-
-*/
-// Endpoint para enviar notificación
+//Guardar suscripción del usuario// Endpoint para enviar notificación
 app.post('/api/sendNotification', async (req, res) => {
     const { userId, message } = req.body;
 
