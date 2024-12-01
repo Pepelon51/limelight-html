@@ -144,11 +144,28 @@
         };
     }
     
-    async function sendSubscriptionToServer(subscriptionData, _id) {
-    console.log("Datos enviados al servidor:", {
-        _id: _id,
-        subscription: subscriptionData,
+    async function sendSubscriptionToServer(subscriptionData, userId) {
+    console.log("Enviando suscripción al servidor:", { userId, subscription: subscriptionData });
+
+    const response = await fetch('https://cholos.onrender.com/api/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId, // Enviar el userId del usuario
+            subscription: subscriptionData,
+        }),
     });
+
+    const result = await response.json();
+
+    if (response.ok) {
+        console.log('Suscripción guardada correctamente.', result);
+    } else {
+        console.error('Error al guardar la suscripción', result);
+        alert('Error al guardar la suscripción: ' + result.message);
+    }
+}
+
 
     const response = await fetch('https://cholos.onrender.com/api/subscription', {
         method: 'POST',

@@ -229,20 +229,22 @@ app.post('/api/sendNotification', async (req, res) => {
 
 // Ruta para guardar suscripción
 app.post('/api/subscription', async (req, res) => {
-    console.log("Cuerpo recibido en la solicitud:", req.body);
+    const { userId, subscription } = req.body; // Cambiamos _id por userId
 
-    const { _id, subscription } = req.body;
+    console.log("Cuerpo recibido en /api/subscription:", req.body);
 
-    if (!_id || !subscription) {
-        console.log("Datos faltantes:", { _id, subscription });
+    // Validar datos
+    if (!userId || !subscription) {
+        console.log("Datos faltantes:", { userId, subscription });
         return res.status(400).json({ message: "Faltan datos requeridos (userId o subscription)." });
     }
 
     try {
+        // Guardar o actualizar la suscripción
         await Subscription.updateOne(
-            { _id },
-            { subscription },
-            { upsert: true }
+            { userId }, // Usar userId como criterio de búsqueda
+            { subscription }, // Actualizar la suscripción
+            { upsert: true } // Crear un nuevo documento si no existe
         );
 
         res.status(201).json({ message: "Suscripción guardada exitosamente." });
@@ -251,3 +253,4 @@ app.post('/api/subscription', async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor." });
     }
 });
+
