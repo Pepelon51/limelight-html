@@ -96,20 +96,20 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
         }
 
-        // Si las contraseñas están en texto plano (no recomendado)
+      /*  // Si las contraseñas están en texto plano (no recomendado)
         if (user.password !== password) {
             console.log("Contraseña incorrecta para el usuario:", username);
             return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
         }
-
+*/
         // Si las contraseñas están encriptadas (mejor práctica)
-        /*
+        
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             console.log("Contraseña incorrecta para el usuario:", username);
             return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
         }
-        */
+        
 
         // Devolver el _id si el login es exitoso
         console.log("Login exitoso para el usuario:", user._id);
