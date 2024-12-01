@@ -209,3 +209,26 @@ app.post('/api/sendNotification', async (req, res) => {
         });
     
 });
+
+// Ruta para guardar suscripción
+app.post('/api/subscription', async (req, res) => {
+    try {
+        const { userId, subscription } = req.body;
+
+        if (!userId || !subscription) {
+            return res.status(400).json({ message: 'Faltan datos requeridos (userId o subscription).' });
+        }
+
+        // Guarda la suscripción en la base de datos
+        await Subscription.updateOne(
+            { userId },
+            { subscription },
+            { upsert: true } // Crea una nueva entrada si no existe
+        );
+
+        res.status(201).json({ message: 'Suscripción guardada exitosamente.' });
+    } catch (error) {
+        console.error('Error al guardar la suscripción:', error);
+        res.status(500).json({ message: 'Error interno del servidor.' });
+    }
+});
