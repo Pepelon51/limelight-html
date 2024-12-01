@@ -82,21 +82,37 @@ app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     console.log("Cuerpo recibido en login:", req.body);
 
-
     // Validar que los campos no estén vacíos
     if (!username || !password) {
         return res.status(400).json({ message: "Por favor, ingresa un nombre de usuario y una contraseña." });
     }
 
     try {
-        // Verificar si el usuario existe
-        const user = await User.findOne({ username, password });
+        // Buscar al usuario en la base de datos
+        const user = await User.findOne({ username });
 
         if (!user) {
+            console.log("Usuario no encontrado:", username);
             return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
         }
 
+        // Si las contraseñas están en texto plano (no recomendado)
+        if (user.password !== password) {
+            console.log("Contraseña incorrecta para el usuario:", username);
+            return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
+        }
+
+        // Si las contraseñas están encriptadas (mejor práctica)
+        /*
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            console.log("Contraseña incorrecta para el usuario:", username);
+            return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
+        }
+        */
+
         // Devolver el _id si el login es exitoso
+        console.log("Login exitoso para el usuario:", user._id);
         res.json({
             message: "Login exitoso.",
             _id: user._id,
@@ -107,6 +123,7 @@ app.post('/api/login', async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor." });
     }
 });
+
 
 
 
