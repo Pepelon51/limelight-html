@@ -77,8 +77,6 @@ app.post("/api/register", async (req, res) => {
 });
 
 
-
-
 // Ruta para hacer login y verificar las credenciales
 app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
