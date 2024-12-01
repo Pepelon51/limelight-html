@@ -66,20 +66,18 @@
       try {
         // Realizar login y obtener el _id del usuario
         const response = await fetch("https://cholos.onrender.com/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        });
-  
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-  
-        const data = await response.json();
-        alert(data.message);
-  
-        // Si el login es exitoso, obtenemos el _id del usuario
-        if (data.message === "Login exitoso.") {
-          const userId = data._id; // Ahora usamos _id
-  
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+});
+
+const data = await response.json();
+console.log("Respuesta del login:", data); // Aquí verifica si `_id` está presente
+
+if (data.message === "Login exitoso.") {
+    const userId = data._id; // Captura el `_id`
+    console.log("ID del usuario obtenido:", userId);
+}
           // Pasamos el _id al Service Worker
           navigator.serviceWorker.ready
             .then((registration) => {
