@@ -78,37 +78,25 @@ app.post("/api/register", async (req, res) => {
 
 
 // Ruta para hacer login y verificar las credenciales
-app.post("/api/login", async (req, res) => {
-    const { username, password } = req.body;
-  
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required." });
-    }
-  
+app.post('/api/login', async (req, res) => {
     try {
-      const user = await User.findOne({ username });
-      
-      if (!user) {
-        return res.status(400).json({ message: "Invalid username or password." });
-      }
-  
-      // Verificar si la contraseña es correcta
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        return res.status(400).json({ message: "Invalid username or password." });
-      }
-  
-      // Aquí es donde incluimos el userId en la respuesta
-      res.status(200).json({
-        message: "Login exitoso.",
-        userId: user._id // Incluimos el ID del usuario logueado
-      });
+        const { username, password } = req.body;
+        const user = await User.findOne({ username, password });
+
+        if (!user) {
+            return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
+        }
+
+        res.json({
+            message: "Login exitoso.",
+            _id: user._id,
+        });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error. Please try again later." });
+        console.error("Error durante el login:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
     }
-  });
-  
+});
+
 
 // Ruta para insertar datos
 app.post("/api/insertar", async (req, res) => {
