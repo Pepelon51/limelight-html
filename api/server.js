@@ -212,23 +212,23 @@ app.post('/api/sendNotification', async (req, res) => {
 
 // Ruta para guardar suscripción
 app.post('/api/subscription', async (req, res) => {
+    const { _id, subscription } = req.body;
+
+    if (!_id || !subscription) {
+        return res.status(400).json({ message: "Faltan datos requeridos (userId o subscription)." });
+    }
+
     try {
-        const { userId, subscription } = req.body;
-
-        if (!userId || !subscription) {
-            return res.status(400).json({ message: 'Faltan datos requeridos (userId o subscription).' });
-        }
-
-        // Guarda la suscripción en la base de datos
+        // Guarda la suscripción asociada al usuario
         await Subscription.updateOne(
-            { userId },
+            { _id }, // Aquí usamos el userId enviado desde el cliente
             { subscription },
             { upsert: true } // Crea una nueva entrada si no existe
         );
 
-        res.status(201).json({ message: 'Suscripción guardada exitosamente.' });
+        res.status(201).json({ message: "Suscripción guardada exitosamente." });
     } catch (error) {
-        console.error('Error al guardar la suscripción:', error);
-        res.status(500).json({ message: 'Error interno del servidor.' });
+        console.error("Error al guardar la suscripción:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
     }
 });
