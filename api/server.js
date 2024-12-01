@@ -79,23 +79,33 @@ app.post("/api/register", async (req, res) => {
 
 // Ruta para hacer login y verificar las credenciales
 app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    // Validar que los campos no estén vacíos
+    if (!username || !password) {
+        return res.status(400).json({ message: "Por favor, ingresa un nombre de usuario y una contraseña." });
+    }
+
     try {
-        const { username, password } = req.body;
+        // Verificar si el usuario existe
         const user = await User.findOne({ username, password });
 
         if (!user) {
             return res.status(400).json({ message: "Usuario o contraseña incorrectos." });
         }
 
+        // Devolver el _id si el login es exitoso
         res.json({
             message: "Login exitoso.",
             _id: user._id,
         });
+
     } catch (error) {
-        console.error("Error durante el login:", error);
+        console.error("Error al procesar el login:", error);
         res.status(500).json({ message: "Error interno del servidor." });
     }
 });
+
 
 
 // Ruta para insertar datos
