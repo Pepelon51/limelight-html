@@ -212,18 +212,20 @@ app.post('/api/sendNotification', async (req, res) => {
 
 // Ruta para guardar suscripción
 app.post('/api/subscription', async (req, res) => {
+    console.log("Cuerpo recibido en la solicitud:", req.body);
+
     const { _id, subscription } = req.body;
 
     if (!_id || !subscription) {
+        console.log("Datos faltantes:", { _id, subscription });
         return res.status(400).json({ message: "Faltan datos requeridos (userId o subscription)." });
     }
 
     try {
-        // Guarda la suscripción asociada al usuario
         await Subscription.updateOne(
-            { _id }, // Aquí usamos el userId enviado desde el cliente
+            { _id },
             { subscription },
-            { upsert: true } // Crea una nueva entrada si no existe
+            { upsert: true }
         );
 
         res.status(201).json({ message: "Suscripción guardada exitosamente." });

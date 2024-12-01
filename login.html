@@ -150,26 +150,30 @@
     }
   
     async function sendSubscriptionToServer(subscriptionData, userId) {
-      const response = await fetch("https://cholos.onrender.com/api/subscription", {
+    const payload = {
+        _id: userId, // El identificador del usuario
+        subscription: subscriptionData, // La suscripción
+    };
+
+    console.log("Payload enviado al servidor:", payload);
+
+    const response = await fetch("https://cholos.onrender.com/api/subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          _id: userId, // Enviamos _id al servidor
-          subscription: subscriptionData,
-        }),
-      });
-  
-      const result = await response.json();
-      console.log("Respuesta del servidor:", result);
-  
-      if (response.ok) {
+        body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+    console.log("Respuesta del servidor:", result);
+
+    if (response.ok) {
         console.log("Suscripción guardada correctamente.", result);
-      } else {
+    } else {
         console.error("Error al guardar la suscripción", result);
         alert("Error al guardar la suscripción: " + result.message);
-      }
     }
-  
+}
+
     function urlB64ToUint8Array(base64String) {
       const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
       const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
