@@ -164,28 +164,7 @@
         console.error('Error al guardar la suscripción', result);
         alert('Error al guardar la suscripción: ' + result.message);
     }
-    }
-
-
-    const response = await fetch('https://cholos.onrender.com/api/subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            _id: _id,
-            subscription: subscriptionData,
-        }),
-    });
-
-    const result = await response.json();
-    console.log('Respuesta del servidor:', result);
-
-    if (response.ok) {
-        console.log('Suscripción guardada correctamente.');
-    } else {
-        console.error('Error al guardar la suscripción:', result);
-        alert('Error al guardar la suscripción: ' + result.message);
-    }
-
+}
 
     
     function urlB64ToUint8Array(base64String) {
