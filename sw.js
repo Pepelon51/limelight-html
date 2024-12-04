@@ -45,21 +45,21 @@ self.addEventListener('push', (event) => {
     console.log('Push recibido:', event);
 
     if (event.data) {
-        const data = event.data.json(); // Convertir payload en JSON
-        console.log('Datos de la notificación:', data);
+        console.log('Datos del evento.data:', event.data);
+        const data = event.data.json();
+        console.log('Datos procesados:', data);
 
         self.registration.showNotification(data.title, {
-            body: data.body, // Mostrar el cuerpo dinámico
-            icon: '/icon.png', // Cambia este ícono si necesitas otro
-        });
-    } else {
-        console.log('No se recibió ningún dato en el push');
-        self.registration.showNotification('Notificación', {
-            body: 'Tienes un mensaje nuevo!', // Mensaje por defecto
+            body: data.body,
             icon: '/icon.png',
         });
+    } else {
+        console.log('El evento push no contiene data.');
     }
 });
+//gola? asjnjsndajnsdjanskdjn
+
+
 
 
 self.addEventListener('notificationclick', (event) => {
