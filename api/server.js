@@ -185,6 +185,8 @@ app.post('/api/sendNotification', async (req, res) => {
             title: 'Nueva Notificación',
             body: message, // Aquí se pasa el mensaje personalizado
         });
+        console.log('Payload enviado:', payload);
+
 
         // Enviar la notificación al cliente
         await webPush.sendNotification(userSubscription.subscription, payload);
@@ -194,7 +196,6 @@ app.post('/api/sendNotification', async (req, res) => {
         console.error('Error al enviar la notificación:', error);
         res.status(500).json({ message: 'Error interno del servidor' });
     }
-    console.log('Payload enviado:', payload);
 
 });
 
