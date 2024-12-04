@@ -194,6 +194,8 @@ app.post('/api/sendNotification', async (req, res) => {
         console.error('Error al enviar la notificación:', error);
         res.status(500).json({ message: 'Error interno del servidor' });
     }
+    console.log('Payload enviado:', payload);
+
 });
 
 // Ruta para guardar suscripción
