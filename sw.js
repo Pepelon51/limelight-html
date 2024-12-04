@@ -42,17 +42,23 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-    const data = event.data ? JSON.parse(event.data.text()) : {};
+    console.log('Push recibido:', event);
 
-    const title = data.title || 'Notificación';
-    const options = {
-        body: data.message || 'Tienes un mensaje nuevo',
-        icon: 'https://cholos.onrender.com/images/logo.png', // Ruta del ícono
-    };
+    if (event.data) {
+        const data = event.data.json(); // Convertir payload en JSON
+        console.log('Datos de la notificación:', data);
 
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    );
+        self.registration.showNotification(data.title, {
+            body: data.body, // Mostrar el cuerpo dinámico
+            icon: '/icon.png', // Cambia este ícono si necesitas otro
+        });
+    } else {
+        console.log('No se recibió ningún dato en el push');
+        self.registration.showNotification('Notificación', {
+            body: 'Tienes un mensaje nuevo!', // Mensaje por defecto
+            icon: '/icon.png',
+        });
+    }
 });
 
 
