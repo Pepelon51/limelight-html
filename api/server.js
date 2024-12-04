@@ -165,66 +165,35 @@ webPush.setVapidDetails(
 
 //Guardar suscripción del usuario// Endpoint para enviar notificación
 app.post('/api/sendNotification', async (req, res) => {
-    const { userId, message } = req.body;
-
-    if (!userId || !message) {
-        return res.status(400).json({ message: "Faltan parámetros" });
-    }
-
     try {
-        const subscription = await Subscription.findOne({ userId });
+        const { userId, message } = req.body;
 
-        if (!subscription) {
-            return res.status(404).json({ message: "Suscripción no encontrada para el usuario" });
+        // Validar datos de entrada
+        if (!userId || !message) {
+            return res.status(400).json({ message: 'Faltan datos requeridos' });
         }
 
+        // Buscar la suscripción del usuario en la colección Subscription
+        const userSubscription = await Subscription.findOne({ userId });
+
+        if (!userSubscription) {
+            return res.status(404).json({ message: 'Usuario o suscripción no encontrada' });
+        }
+
+        // Configurar el payload de la notificación
         const payload = JSON.stringify({
-            title: 'Notificación personalizada',
-            body: message,
-            icon: '/icon.png',
-            url: 'https://cholos.onrender.com/',
+            title: 'Nueva Notificación',
+            body: message, // Aquí se pasa el mensaje personalizado
         });
 
-        try {
-            await webPush.sendNotification(subscription.subscription, payload);
-            res.status(200).json({ message: "Notificación enviada exitosamente" });
-        } catch (error) {
-            console.error("Error al enviar notificación:", error);
+        // Enviar la notificación al cliente
+        await webPush.sendNotification(userSubscription.subscription, payload);
 
-            if (error.statusCode === 410) {
-                // Si la suscripción ha expirado, elimínala de la base de datos
-                await Subscription.deleteOne({ userId });
-                return res.status(410).json({
-                    message: "La suscripción ha expirado y ha sido eliminada.",
-                });
-            }
-
-            res.status(500).json({
-                message: "Error al enviar notificación.",
-                error: error.message,
-            });
-        }
+        res.status(200).json({ message: 'Notificación enviada correctamente' });
     } catch (error) {
-        console.error("Error al buscar suscripción:", error);
-        res.status(500).json({ message: "Error al buscar la suscripción." });
+        console.error('Error al enviar la notificación:', error);
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
-    const payload = JSON.stringify({
-        title: 'Notificación de prueba',
-        message: 'Este es un mensaje de prueba',
-        icon: '/icon.png',
-        badge: '/badge.png',
-    });
-    
-    console.log('Payload enviado:', payload);
-    
-    webPush.sendNotification(subscription, payload)
-        .then(response => {
-            console.log('Notificación enviada:', response);
-        })
-        .catch(error => {
-            console.error('Error al enviar la notificación:', error);
-        });
-    
 });
 
 // Ruta para guardar suscripción
